@@ -1,0 +1,7 @@
+{
+  "name": "Mobile-project",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
