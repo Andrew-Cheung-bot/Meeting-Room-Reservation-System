@@ -3,32 +3,32 @@ import TabsPage from '../views/TabsPage.vue'
 
 const routes = [
   {
-    path: '/',
-    redirect: '/tabs/tab1'
+    path: "/",
+    redirect: "/library/main",
   },
   {
-    path: '/tabs/',
+    path: "/library/",
     component: TabsPage,
     children: [
       {
-        path: '',
-        redirect: '/tabs/tab1'
+        path: "",
+        redirect: "/library/main",
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
+        path: "main",
+        component: () => import("@/views/StatusPage.vue"),
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
+        path: "booking",
+        component: () => import("@/views/BookingPage.vue"),
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
-      }
-    ]
-  }
-]
+        path: "home",
+        component: () => import("@/views/HomePage.vue"),
+      },
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
