@@ -21,11 +21,11 @@
       <ion-grid :fixed="true">
         <ion-row>
           <ion-col class="time-col head-col">Time line</ion-col>
-          <ion-col class="head-col">roomA<br>(6-seats)</ion-col>
-          <ion-col class="head-col">roomB<br>(4-seats)</ion-col>
+          <ion-col class="head-col">roomA<br>(4-seats)</ion-col>
+          <ion-col class="head-col">roomB<br>(6-seats)</ion-col>
           <ion-col class="head-col">roomC<br>(10-seats)</ion-col>
         </ion-row>
-        <ion-row v-for="item in res.data">
+        <ion-row v-for="item in res.data" :key="item.time">
           <ion-col class="time-col">
             {{ item.time }}
           </ion-col>
@@ -34,7 +34,7 @@
             <ion-icon aria-hidden="true" :icon="closeCircleOutline" /><br>
             Reserved
           </ion-col>
-          <ion-col v-else class="empty-col" @click="booking">
+          <ion-col v-else class="empty-col" @click="booking(item.time,'A')">
             <ion-icon aria-hidden="true" :icon="checkmarkCircleOutline" /><br>
             Apply Now
           </ion-col>
@@ -43,18 +43,18 @@
             <ion-icon aria-hidden="true" :icon="closeCircleOutline" /><br>
             Reserved
           </ion-col>
-          <ion-col v-else class="empty-col" @click="booking">
-            <ion-icon aria-hidden="true" :icon="checkmarkCircleOutline" /><br>
-            Apply Now
+          <ion-col v-else class="empty-col" @click="booking(item.time, 'B')">
+            <ion-icon aria-hidden=" true" :icon="checkmarkCircleOutline" /><br>
+          Apply Now
           </ion-col>
 
           <ion-col v-if="(item.roomC) == 'Reserved'" class="reserved-col">
             <ion-icon aria-hidden="true" :icon="closeCircleOutline" /><br>
             Reserved
           </ion-col>
-          <ion-col v-else class="empty-col" @click="booking">
-            <ion-icon aria-hidden="true" :icon="checkmarkCircleOutline" /><br>
-            Apply Now
+          <ion-col v-else class="empty-col" @click="booking(item.time, 'C')">
+            <ion-icon aria-hidden=" true" :icon="checkmarkCircleOutline" /><br>
+          Apply Now
           </ion-col>
         </ion-row>
 
@@ -95,9 +95,11 @@ const res = ref({
     { time: '23:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' }]
 });
 
-function booking(event) {
-  router.push('/library/booking');
+function booking(start_time, room_number) {
+  const timeParts = start_time.split(':');
+  router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0] } });
 }
+
 function changeDate(event) {
   alert(res.value.date);
   //axios to update res_data

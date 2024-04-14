@@ -2,22 +2,48 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Tab 2</ion-title>
+        <ion-title>Room Booking</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Tab 2</ion-title>
-        </ion-toolbar>
-      </ion-header>
 
-      <ExploreContainer name="Tab 2 page" />
+      <ion-card>
+        <img alt="room A" src="/room_a.jpg" style="width: 100%; height: 400px;" />
+        <ion-card-header>
+          <ion-card-title>Room A</ion-card-title>
+          <ion-card-subtitle>4 seats provided</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+
+      <ion-card>
+        <img alt="room B" src="/room_b.jpg" style="width: 100%; height: 400px;" />
+        <ion-card-header>
+          <ion-card-title>Room B</ion-card-title>
+          <ion-card-subtitle>6 seats provided</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+
+      <ion-card>
+        <img alt="room C" src="/room_c.png" style="width: 100%; height: 400px;" />
+        <ion-card-header>
+          <ion-card-title>Room C</ion-card-title>
+          <ion-card-subtitle>10 seats provided</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+
     </ion-content>
   </ion-page>
 </template>
 
 <script setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/vue';
 </script>
+
+<style scoped>
+ion-card-title {
+  --color: #2a73a1;
+}
+ion-card {
+  --background: #e3e3e3;
+}
+</style>
