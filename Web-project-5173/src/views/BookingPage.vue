@@ -1,7 +1,7 @@
 <template>
-  <router-view />
+    <p>booking</p>
 </template>
 
 <script setup>
-  //
+ //
 </script>
