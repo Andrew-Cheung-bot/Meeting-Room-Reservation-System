@@ -97,7 +97,7 @@ const res = ref({
 
 function booking(start_time, room_number) {
   const timeParts = start_time.split(':');
-  router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0] } });
+  router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0], date: res.value.date } });
 }
 
 function changeDate(event) {
