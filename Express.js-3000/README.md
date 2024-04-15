@@ -16,7 +16,7 @@
     - structure:  
       |field               |desc                    |sample              |
       |:------------------:|:----------------------:|:------------------:|
-      |**room_id**         |3 chosen rooms (A,B,C)  |'roomA/roomB/roomC' |
+      |**room_id**         |3 chosen rooms (A,B,C)  |'A/B/C' |
       |*u_email*           |email                   |'AndrewLe@gmail.com'|
       |u_name              |username                |'AndrewLe'          |
       |start_time          |beginning of the booking|'8/9/10/.../23'     |
