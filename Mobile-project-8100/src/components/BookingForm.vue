@@ -17,14 +17,14 @@
         </ion-item>
 
         <ion-item>
-            <ion-input type="email" placeholder="email@domain.com" :clear-input="true" :value="form.u_email">
+            <ion-input type="email" placeholder="email@domain.com" :clear-input="true" v-model="form.u_email">
                 <div slot="label">Email <ion-text color="danger">*</ion-text></div>
             </ion-input>
         </ion-item>
 
         <ion-item>
             <ion-input label="Register Name" placeholder="Enter your name" :clear-input="true"
-                :value="form.u_name"></ion-input>
+                v-model="form.u_name"></ion-input>
         </ion-item>
 
 
@@ -39,13 +39,13 @@
         </ion-modal>
 
         <ion-item>
-            <ion-input type="number" placeholder="8 (opening hours)" :clear-input="true" :value="form.start_time">
+            <ion-input type="number" placeholder="8 (opening hours)" :clear-input="true" v-model="form.start_time">
                 <div slot="label">Start Time <ion-text color="danger">*</ion-text></div>
             </ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-range label-placement="start" :ticks="true" :snaps="true" :min="1" :max="5" :value="form.end_time"
+            <ion-range label-placement="start" :ticks="true" :snaps="true" :min="1" :max="5" v-model="end_num"
                 :pin="true">
                 <div slot="label">Duration <ion-text color="danger">*</ion-text> (hours)</div>
 
@@ -60,17 +60,23 @@
 </template>
 
 <script setup>
-import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonDatetime, IonModal, IonDatetimeButton } from '@ionic/vue';
-import { ref, watch } from 'vue';
+import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonDatetime, IonModal, IonDatetimeButton, IonInput, IonRange
+} from '@ionic/vue';
+import { ref, watch, computed } from 'vue';
 import { checkmarkDoneOutline, returnDownBackOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-// defineProps({
-//     name: String,
-// });
 const emit = defineEmits(['callBack']);
+
+const end_num = ref()
+// change end_num to String
+const convertIntToString = computed(() => {
+    if (end_num.value != undefined) {
+        return end_num.value.toString()
+    }
+})
 
 const form = ref({
     room_id: route.query.room_id,
@@ -78,11 +84,11 @@ const form = ref({
     u_name: '',
     date: route.query.date,
     start_time: route.query.start_time,
-    end_time: ''
+    end_time: convertIntToString
 });
 
 function submitForm(event) {
-    console.log(route.query)
+    alert(JSON.stringify(form.value));
 }
 
 function goBack(event) {

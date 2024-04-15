@@ -56,9 +56,17 @@ function bookRoom(room_number) {
 }
 
 function Back(back) {
-  login.value = back;
+  // login.value = back;
+  login.value = false;
+  router.back();
 }
 
+watch(() => route.query, (newValue, oldValue) => {
+  if (newValue.fromstatus == '1') {
+    login.value = true;
+    console.log(login.value);
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

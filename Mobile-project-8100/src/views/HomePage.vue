@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content :fullscreen="true">
       <div v-if="!login">
-        <Register />
+        <RegisterForm />
       </div>
 
       <div v-if="login">
@@ -25,10 +25,6 @@
                   <p>gender</p>
                 </ion-label>
               </ion-item>
-              <div class="button-group">
-                <ion-button color="secondary" fill="clear" @click="update">Update</ion-button>
-                <ion-button color="danger" fill="clear" @click="logout">Logout</ion-button>
-              </div>
             </ion-list>
 
             <ion-list v-if="!loaded">
@@ -59,8 +55,20 @@
             Show information
             <ion-ripple-effect></ion-ripple-effect>
           </div>
+          
+          <div class="button-group">
+            <ion-button color="secondary" fill="clear" @click="update()">Update Info</ion-button>
+            <ion-button color="danger" fill="clear" @click="logout">Logout</ion-button>
+          </div>
         </ion-card>
       </div>
+
+      <div v-if="showUpdateForm">
+        <ion-card>
+          <UpdateForm />
+        </ion-card>
+      </div>
+
     </ion-content>
   </ion-page>
 
@@ -78,18 +86,20 @@ import {
   IonSkeletonText,
   IonThumbnail, IonRippleEffect
 } from '@ionic/vue';
-import { ref, onMounted } from 'vue';
-import Register from '../components/Register.vue';
+import { ref } from 'vue';
+import RegisterForm from '../components/RegisterForm.vue';
+import UpdateForm from '../components/UpdateForm.vue';
 
-const login = ref(false)
+const login = ref(true);
+const showUpdateForm = ref(false);
 
 const loaded = ref(false);
 function setLoaded(event) {
   loaded.value = event;
 }
 
-function update(event) {
-  alert('update');
+function update() {
+  showUpdateForm.value = !showUpdateForm.value;
 }
 
 function logout(event) {
@@ -133,11 +143,11 @@ b {
 .rounded-rectangle {
   width: 100%;
   height: 50px;
-  border-radius: 10px;
+  border-radius: 1px;
 }
 
 .button-group {
   display: flex;
   justify-content: space-between;
 }
-</style>
+</style>../components/RegisterForm.vue
