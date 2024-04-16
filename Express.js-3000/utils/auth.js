@@ -15,7 +15,7 @@ const decodeToken = function (token) {
         const decoded = jwt.verify(token, TOKEN_SECRET);
         return decoded;
     } catch (err) {
-        return null; // Token 验证失败
+        return "Fail decode token"; // Token 验证失败
     }
 }
 

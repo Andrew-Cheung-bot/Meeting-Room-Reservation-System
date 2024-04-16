@@ -15,27 +15,33 @@ router.post('/booking', async function (req, res, next) {
   
   const db = await connectToDB();
   try {
-    // // Extract JWT from Authorization header
-    // const token = req.headers.authorization.split(' ')[1];
+    // Extract JWT from Authorization header
+    const token = req.headers.authorization;
     
-    // // Verify the JWT
-    // const decoded = decodeToken(token);
+    // Verify the JWT
+    const decoded = decodeToken(token);
 
-    // // Get user ID from the decoded JWT
-    // const u_email = decoded.u_email;
-    // const u_name = decoded.u_name;
+    // Get user ID from the decoded JWT
+    const u_email = decoded.u_email;
+    const u_name = decoded.u_name;
 
-    // const { room_id, start_time, end_time, date } = req.body;
-    const { room_id,u_email,u_name, start_time, end_time, date } = req.body;
+    const { room_id, start_time, end_time, date } = req.body;
+
+    const userStartTime = parseInt(start_time);
+    const userEndTime = parseInt(end_time);
+    if(userStartTime < 8 || userStartTime > 23 || userEndTime < 9 || userEndTime > 24){
+      res.status(400).json({ status: 400, message: 'Incorrect range of input time' });
+      return;
+    }
 
     // Find existing bookings for the specified date and room
     const existingBookings = await db.collection("room_info").find({ date: date, room_id: room_id }).toArray();
 
     // Check for overlapping time slots with the user's requested time slot
     const overlappingBooking = existingBookings.find(booking => {
-      const bookingStartTime = booking.start_time;
-      const bookingEndTime = booking.end_time;
-      return (start_time < bookingEndTime || end_time > bookingStartTime);
+      const bookingStartTime = parseInt(booking.start_time);
+      const bookingEndTime = parseInt(booking.end_time);
+      return (userStartTime < bookingEndTime && userEndTime > bookingStartTime);
     });
 
     if (overlappingBooking) {
@@ -71,8 +77,8 @@ router.post('/booking', async function (req, res, next) {
 router.get('/view-bookings', async function (req, res, next) {
   const db = await connectToDB();
   try {
-    // Get the date from the request query parameters
-    const date = req.query.date;
+    // Get the date
+    const date = req.body.date;
 
     // Find room bookings for the specified date
     const roomBookings = await db.collection("room_info").find({ date: date }).toArray();
@@ -91,13 +97,14 @@ router.get('/view-bookings', async function (req, res, next) {
       const startTime = booking.start_time;
       const endTime = booking.end_time;
       const roomID = booking.room_id;
-
+      
       const startIndex = timeSlots.indexOf(startTime);
-      if(endTime === '24:00'){
-        const endIndex = timeSlots.indexOf('23:00') + 1;
-      }else{
-        const endIndex = timeSlots.indexOf(endTime);
-      }
+      const endIndex = timeSlots.indexOf(endTime);
+      // if(endTime == '24:00'){
+      //   const endIndex = timeSlots.indexOf('23:00') + 1;
+      // }else{
+      //   const endIndex = timeSlots.indexOf(endTime);
+      // }
       
 
       data = data.map(slot => {
