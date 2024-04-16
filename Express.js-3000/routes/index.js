@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-/* Bookings */
+/* Booking */
 router.post('/booking', async function (req, res, next) {
   
   const db = await connectToDB();
@@ -137,5 +137,26 @@ router.get('/view-bookings', async function (req, res, next) {
   }
 });
 
+/* Delete booking */
+router.delete('/delete-booking', async function (req, res, next) {
+  const db = await connectToDB();
+  try {
+    // Check if the booking exists
+    const Booking = await db.collection("room_info").findOne({ _id: new ObjectId(req.body._id), u_email: req.body.u_email });
+    if (!Booking) {
+      return res.status(404).json({ status: 404, message: 'Booking not found' });
+    }
+
+    // Delete the booking
+    await db.collection("room_info").deleteOne({ _id: new ObjectId(req.body._id) });
+
+    res.status(200).json({ status: 200, message: 'Booking deleted successfully', deleteBooking: Booking });
+    
+  } catch (err) {
+    res.status(400).json({ status: 400, message: err.message });
+  } finally {
+    await db.client.close();
+  }
+});
 
 module.exports = router;
