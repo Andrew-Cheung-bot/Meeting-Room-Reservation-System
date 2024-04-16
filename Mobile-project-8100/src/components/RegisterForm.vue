@@ -46,22 +46,31 @@
                 v-model="form.u_career"></ion-input>
         </ion-item>
 
-        <ion-button color="success" shape="round" expand="block" @click="submitForm">Sign up<ion-icon slot="end"
-                :icon="checkmarkDoneOutline"></ion-icon></ion-button>
+        <div style="display: flex; justify-content: space-around;">
+            <ion-button id="signup" fill="clear" color="success" shape="round" expand="block" @click="Register">Sign
+                up<ion-icon slot="end" :icon="checkmarkDoneOutline"></ion-icon>
+            </ion-button>
+
+            <ion-button fill="clear" color="medium" shape="round" expand="block" @click="goLogin">I
+                have account
+                <ion-icon slot="end" :icon="arrowForwardOutline"></ion-icon>
+            </ion-button>
+        </div>
     </ion-list>
 </template>
 
 <script setup>
-import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonInput } from '@ionic/vue';
-import { ref } from 'vue';
+import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonInput, alertController } from '@ionic/vue';
+import { ref, defineProps, defineEmits } from 'vue';
 import { checkmarkDoneOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
 
-const router = useRouter()
-const route = useRoute()
-// defineProps({
-//     name: String,
-// });
+const router = useRouter();
+const route = useRoute();
+const props = defineProps(['isRegister']);
+const message = ref();
+const alertButtons = ['Confirm'];
+const emit = defineEmits(['goBackToLogin']);
 
 const form = ref({
     u_email: '',
@@ -72,10 +81,34 @@ const form = ref({
     u_career: ''
 });
 
-function submitForm(event) {
-    alert(JSON.stringify(form.value));
+async function Register(event) {
+    console.log(JSON.stringify(form.value))
+    const url = '/users/register';
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form.value)
+    });
+    const res = await response.json();
+
+    const alert = await alertController.create({
+        header: 'Message',
+        message: res.message,
+        buttons: ['Confirm'],
+    });
+    await alert.present();
+    if (res.status == 201) {
+        emit("goBackToLogin", !props.isRegister);
+    }
+    console.log(res);
 }
 
+
+function goLogin(event) {
+    emit("goBackToLogin", !props.isRegister);
+}
 </script>
 
 <style scoped></style>

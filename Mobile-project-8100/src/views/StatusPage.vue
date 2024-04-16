@@ -34,7 +34,7 @@
             <ion-icon aria-hidden="true" :icon="closeCircleOutline" /><br>
             Reserved
           </ion-col>
-          <ion-col v-else class="empty-col" @click="booking(item.time,'A')">
+          <ion-col v-else class="empty-col" @click="booking(item.time, 'A')">
             <ion-icon aria-hidden="true" :icon="checkmarkCircleOutline" /><br>
             Apply Now
           </ion-col>
@@ -45,7 +45,7 @@
           </ion-col>
           <ion-col v-else class="empty-col" @click="booking(item.time, 'B')">
             <ion-icon aria-hidden=" true" :icon="checkmarkCircleOutline" /><br>
-          Apply Now
+            Apply Now
           </ion-col>
 
           <ion-col v-if="(item.roomC) == 'Reserved'" class="reserved-col">
@@ -54,19 +54,18 @@
           </ion-col>
           <ion-col v-else class="empty-col" @click="booking(item.time, 'C')">
             <ion-icon aria-hidden=" true" :icon="checkmarkCircleOutline" /><br>
-          Apply Now
+            Apply Now
           </ion-col>
         </ion-row>
 
       </ion-grid>
 
     </ion-content>
-
   </ion-page>
 </template>
 
 <script setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonDatetime, IonModal, IonDatetimeButton } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonDatetime, IonModal, IonDatetimeButton, alertController } from '@ionic/vue';
 import { closeCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
@@ -95,11 +94,20 @@ const res = ref({
     { time: '23:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' }]
 });
 
-function booking(start_time, room_number) {
-  const timeParts = start_time.split(':');
-  // 如果登录了就可以直接跳
-  router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0], date: res.value.date, fromstatus: '1' } });
-  // 否则跳到注册页面
+async function booking(start_time, room_number) {
+  const token = localStorage.getItem('token');
+  if (token == null) {
+    const alert = await alertController.create({
+      header: 'Message',
+      message: 'You need to login before your booking.',
+      buttons: ['Confirm'],
+    });
+    await alert.present();
+    router.push('/library/home');
+  } else {
+    const timeParts = start_time.split(':');
+    router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0], date: res.value.date, fromstatus: '1' } });
+  }
 }
 
 function changeDate(event) {
