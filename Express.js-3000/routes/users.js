@@ -14,10 +14,6 @@ router.get('/', function(req, res, next) {
 router.post('/login', async function (req, res, next) {
   const db = await connectToDB();
   try {
-    // Check if the user is already logged in
-    if (req.headers.authorization) {
-      return res.status(200).json({ status: 200, message: 'User is already logged in' });
-    }
 
     // check if the user exists
     var user = await db.collection("user_info").findOne({ u_email: req.body.u_email });
@@ -192,7 +188,7 @@ router.delete('/delete-user', async function (req, res, next) {
   }
 });
 
-/* Find bookings based on user id */
+/* Find bookings based on user email */
 router.get('/show-bookings', async function (req, res, next) {
   const db = await connectToDB();
   try {
