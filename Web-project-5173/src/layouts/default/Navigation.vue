@@ -1,5 +1,5 @@
 <template>
-    <v-navigation-drawer v-model="drawer" :rail="rail" floating permanent @click="rail = false">
+    <v-navigation-drawer v-model="drawer" :rail="rail"  permanent @click="rail = false">
         <v-list-item prepend-avatar="/src/assets/User.png" title="UserName" nav>
             <template v-slot:append>
                 <v-btn icon="mdi-chevron-left" variant="text" @click.stop="rail = !rail"></v-btn>
@@ -14,6 +14,7 @@
             <v-list-item prepend-icon="mdi-book-open-outline" title="Booking" value="Booking" to="/booking"></v-list-item>
         </v-list>
     </v-navigation-drawer>
+    
 
 </template>
 
