@@ -37,12 +37,6 @@
         </ion-item>
 
         <ion-item>
-            <ion-input type="password" v-model="form.u_pwd">
-                <div slot="label">Password <ion-text color="danger">*</ion-text></div>
-            </ion-input>
-        </ion-item>
-
-        <ion-item>
             <ion-input label="Career" placeholder="Enter your career" :clear-input="true" v-model="form.u_career">
             </ion-input>
         </ion-item>
@@ -54,25 +48,44 @@
 </template>
 
 <script setup>
-import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonInput } from '@ionic/vue';
-import { ref } from 'vue';
+import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonInput, alertController } from '@ionic/vue';
+import { ref, defineProps, watch } from 'vue';
 import { checkmarkDoneOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
 
+const props = defineProps(['Userinfo'])
+const emit = defineEmits(['Close'])
 const router = useRouter()
 const route = useRoute()
 
 const form = ref({
-    u_email: '',
-    u_name: '',
-    u_pwd: '',
-    u_gender: '',
-    u_age: '',
-    u_career: ''
+    u_email: props.Userinfo.u_email,
+    u_name: props.Userinfo.u_name,
+    u_gender: props.Userinfo.u_gender,
+    u_age: props.Userinfo.u_age,
+    u_career: props.Userinfo.u_career
 });
 
-function submitForm(event) {
-    alert(JSON.stringify(form.value));
+async function submitForm(event) {
+    const url = '/users/update-user';
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('token')
+        },
+        body: JSON.stringify(form.value)
+    });
+    const res = await response.json();
+    const alert = await alertController.create({
+        header: 'Message',
+        message: res.message,
+        buttons: ['Confirm'],
+    });
+    await alert.present();
+    if (res.status = 200) {
+        emit('Close', false);
+    }
 }
 
 </script>

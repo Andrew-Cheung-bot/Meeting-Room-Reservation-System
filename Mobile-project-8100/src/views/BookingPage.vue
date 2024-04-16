@@ -11,7 +11,7 @@
       </div>
       <div v-if="!login">
         <ion-card @click="bookRoom('A')">
-          <img alt="A" src="/room_a.png" style="width: 100%; height: 400px;" />
+          <img alt="A" src="/_a.png" style="width: 100%; height: 400px;" />
           <ion-card-header>
             <ion-card-title>Room A</ion-card-title>
             <ion-card-subtitle>4 seats provided</ion-card-subtitle>
@@ -19,7 +19,7 @@
         </ion-card>
 
         <ion-card @click="bookRoom('B')">
-          <img alt="B" src="/room_b.jpg" style="width: 100%; height: 400px;" />
+          <img alt="B" src="/_b.jpg" style="width: 100%; height: 400px;" />
           <ion-card-header>
             <ion-card-title>Room B</ion-card-title>
             <ion-card-subtitle>6 seats provided</ion-card-subtitle>
@@ -27,7 +27,7 @@
         </ion-card>
 
         <ion-card @click="bookRoom('C')">
-          <img alt="C" src="/room_c.jpg" style="width: 100%; height: 400px;" />
+          <img alt="C" src="/_c.jpg" style="width: 100%; height: 400px;" />
           <ion-card-header>
             <ion-card-title>Room C</ion-card-title>
             <ion-card-subtitle>10 seats provided</ion-card-subtitle>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, alertController } from '@ionic/vue';
 import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import BookingForm from '../components/BookingForm.vue';
@@ -50,9 +50,20 @@ const route = useRoute()
 
 const login = ref(false)
 
-function bookRoom(room_number) {
-  login.value = true;
-  router.push({ path: '/library/booking', query: { room_id: room_number} });
+async function bookRoom(room_number) {
+  const token = localStorage.getItem('token');
+  if (token == null) {
+    const alert = await alertController.create({
+      header: 'Message',
+      message: 'You need to login before your booking.',
+      buttons: ['Confirm'],
+    });
+    await alert.present();
+    router.push('/library/home');
+  } else {
+    login.value = true;
+    router.push({ path: '/library/booking', query: { room_id: room_number } });
+  }
 }
 
 function Back(back) {
