@@ -73,7 +73,7 @@ router.post('/booking', async function (req, res, next) {
 });
 
 
-/* Find room bookings based on date */ //待测
+/* Find room bookings based on date */
 router.get('/view-bookings', async function (req, res, next) {
   const db = await connectToDB();
   try {
@@ -84,8 +84,9 @@ router.get('/view-bookings', async function (req, res, next) {
     const roomBookings = await db.collection("room_info").find({ date: date }).toArray();
 
     // Prepare the response data for all time slots
-    const timeSlots = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
-    let data = timeSlots.map(time => ({
+    const timeSlots = ['8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+    const timemap = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
+    let data = timemap.map(time => ({
       time: time,
       roomA: 'Empty',
       roomB: 'Empty',
@@ -99,16 +100,15 @@ router.get('/view-bookings', async function (req, res, next) {
       const roomID = booking.room_id;
       
       const startIndex = timeSlots.indexOf(startTime);
-      const endIndex = timeSlots.indexOf(endTime);
-      // if(endTime == '24:00'){
-      //   const endIndex = timeSlots.indexOf('23:00') + 1;
-      // }else{
-      //   const endIndex = timeSlots.indexOf(endTime);
-      // }
+      let endIndex;
+      if(endTime == '24:00'){
+        endIndex = timeSlots.indexOf('23:00') + 1;
+      }else{
+        endIndex = timeSlots.indexOf(endTime);
+      }
       
-
       data = data.map(slot => {
-        if (timeSlots.indexOf(slot.time) >= startIndex && timeSlots.indexOf(slot.time) < endIndex) {
+        if (timemap.indexOf(slot.time) >= startIndex && timemap.indexOf(slot.time) < endIndex) {
           if (roomID.includes('A')) {
             slot.roomA = 'Reserved';
           }
