@@ -12,6 +12,8 @@
             <v-list-item prepend-icon="mdi-home-city" title="Home" value="Home" to="/home"></v-list-item>
             <v-list-item prepend-icon="mdi-list-status" title="Status" value="Status" to="/status"></v-list-item>
             <v-list-item prepend-icon="mdi-book-open-outline" title="Booking" value="Booking" to="/booking"></v-list-item>
+            <v-list-item prepend-icon="mdi-login" title="Login" value="Login" to="/login"></v-list-item>
+            <v-list-item prepend-icon="mdi-draw" title="Signup" value="Signup" to="/signup"></v-list-item>
         </v-list>
     </v-navigation-drawer>
 
