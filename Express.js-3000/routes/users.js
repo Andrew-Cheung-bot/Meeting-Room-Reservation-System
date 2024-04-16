@@ -28,7 +28,7 @@ router.post('/login', async function (req, res, next) {
 
     // Check if the password matches
     if (user.u_pwd !== req.body.u_pwd) {
-      res.status(401).json({ status: 401, message: 'Incorrect password' });
+      res.status(401).json({ status: 402, message: 'Incorrect password' });
       return;
     }
 
@@ -101,16 +101,16 @@ router.get('/show-user', async function (req, res, next) {
   const db = await connectToDB();
   try {
     // Extract JWT from Authorization header
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization;
     
     // Decode the JWT
     const decoded = decodeToken(token);
 
     // Get user email from the decoded JWT
     const _id = decoded._id;
-
-    const user = await db.collection("user_info").findOne({ _id: _id });
-
+    
+    const user = await db.collection("user_info").findOne({ _id: new ObjectId(_id) });
+    console.log(user);
     res.status(200).json({ status: 200, message: 'Successfully find user information', user: user });
     
   } catch (err) {
@@ -125,16 +125,16 @@ router.post('/update-user', async function (req, res, next) {
   const db = await connectToDB();
   try {
     // Extract JWT from Authorization header
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization;
     
     // Verify the JWT
     const decoded = decodeToken(token);
 
     // Get user ID from the decoded JWT
-    const userId = decoded._id;
+    const _id = decoded._id;
 
     // Check if the user exists
-    const user = await db.collection("user_info").findOne({ _id: ObjectId(userId) });
+    const user = await db.collection("user_info").findOne({ _id: new ObjectId(_id) });
     if (!user) {
       return res.status(404).json({ status: 404, message: 'User not found' });
     }
@@ -150,7 +150,7 @@ router.post('/update-user', async function (req, res, next) {
       }
     };
 
-    await db.collection("user_info").updateOne({ _id: ObjectId(userId) }, updateData);
+    await db.collection("user_info").updateOne({ _id: new ObjectId(_id) }, updateData);
 
     res.status(200).json({ status: 200, message: 'User information updated successfully' });
     
@@ -166,22 +166,22 @@ router.delete('/delete-user', async function (req, res, next) {
   const db = await connectToDB();
   try {
     // Extract JWT from Authorization header
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization;
     
     // Verify the JWT
     const decoded = decodeToken(token);
 
     // Get user ID from the decoded JWT
-    const userId = decoded._id;
+    const _id = decoded._id;
 
     // Check if the user exists
-    const user = await db.collection("user_info").findOne({ _id: ObjectId(userId) });
+    const user = await db.collection("user_info").findOne({ _id: new ObjectId(_id) });
     if (!user) {
       return res.status(404).json({ status: 404, message: 'User not found' });
     }
 
     // Delete the user
-    await db.collection("user_info").deleteOne({ _id: ObjectId(userId) });
+    await db.collection("user_info").deleteOne({ _id: new ObjectId(_id) });
 
     res.status(200).json({ status: 200, message: 'User deleted successfully' });
     
@@ -192,21 +192,21 @@ router.delete('/delete-user', async function (req, res, next) {
   }
 });
 
-/* Find bookings based on user id *///待测
+/* Find bookings based on user id */
 router.get('/show-bookings', async function (req, res, next) {
   const db = await connectToDB();
   try {
     // Extract JWT from Authorization header
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization;
     
     // Decode the JWT
     const decoded = decodeToken(token);
 
     // Get user email from the decoded JWT
-    const _id = decoded._id;
+    const u_email = decoded.u_email;
 
     // Find room bookings for the user
-    const bookings = await db.collection("room_info").find({ _id: _id }).toArray();
+    const bookings = await db.collection("room_info").find({ u_email : u_email  }).toArray();
 
     if (bookings.length === 0) {
       return res.status(404).json({ status: 404, message: 'No bookings found for this user' });
