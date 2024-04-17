@@ -58,8 +58,13 @@
             <ion-ripple-effect></ion-ripple-effect>
           </div>
 
+          <div class="ion-activatable ripple-parent rounded-rectangle" @click="updateBookInfo">
+            Show Booking info
+            <ion-ripple-effect></ion-ripple-effect>
+          </div>
+
           <div class="button-group">
-            <ion-button color="secondary" fill="clear" @click="update()">Update Info</ion-button>
+            <ion-button color="secondary" fill="clear" @click="update">Update Info</ion-button>
             <ion-button color="danger" fill="clear" @click="logout">Logout</ion-button>
           </div>
         </ion-card>
@@ -67,7 +72,13 @@
 
       <div v-if="showUpdateForm">
         <ion-card>
-          <UpdateForm :Userinfo="user_info" @Close="close"/>
+          <UpdateForm :Userinfo="user_info" @Close="close" />
+        </ion-card>
+      </div>
+
+      <div v-if="showBookingInfo">
+        <ion-card>
+          <BookingInfo :res="res"/>
         </ion-card>
       </div>
 
@@ -91,6 +102,7 @@ import {
 import { ref, onMounted, watch } from 'vue';
 import UpdateForm from '../components/UpdateForm.vue';
 import LoginForm from '../components/LoginForm.vue';
+import BookingInfo from '../components/BookingInfo.vue';
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -98,6 +110,8 @@ const route = useRoute()
 
 const login = ref(false);
 const showUpdateForm = ref(false);
+const showBookingInfo = ref(false);
+const res = ref();
 
 const loaded = ref(false);
 function setLoaded(event) {
@@ -137,6 +151,22 @@ watch(login, async (newValue) => {
 
 function update() {
   showUpdateForm.value = !showUpdateForm.value;
+}
+
+async function updateBookInfo() {
+  showBookingInfo.value = !showBookingInfo.value;
+
+  const url = '/users/show-bookings';
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": localStorage.getItem('token')
+    }
+  });
+  const result = await response.json();
+  res.value = result;
+  console.log(res.value);
 }
 
 function logout(event) {
