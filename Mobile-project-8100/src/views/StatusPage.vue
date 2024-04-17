@@ -59,6 +59,8 @@
         </ion-row>
 
       </ion-grid>
+      <div class="hello" ref="chartdiv">
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -67,8 +69,13 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonDatetime, IonModal, IonDatetimeButton, alertController } from '@ionic/vue';
 import { closeCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, shallowRef } from 'vue'
+import * as am5 from '@amcharts/amcharts5';
+import * as am5xy from '@amcharts/amcharts5/xy';
+import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 
+let root;
+const chartdiv = shallowRef(null);
 const router = useRouter()
 const route = useRoute()
 const year = new Date().getFullYear();
@@ -80,7 +87,7 @@ const now_date = ref(year + '-' + m_month + '-' + date);
 
 const res = ref({
   date: now_date.value,
-  data:[]
+  data: []
 });
 
 async function booking(start_time, room_number) {
@@ -90,7 +97,7 @@ async function booking(start_time, room_number) {
   const m_month = month < 10 ? '0' + month : month;
   const date = new Date(temp).getDate();
   const now_date = ref(year + '-' + m_month + '-' + date);
-  
+
   const token = localStorage.getItem('token');
   if (token == null) {
     const alert = await alertController.create({
@@ -128,6 +135,7 @@ async function changeDate(event) {
   // console.log(res.value.data)
 }
 
+
 onMounted(async () => {
   console.log('on mounted');
   const body1 = { "date": res.value.date }
@@ -150,7 +158,97 @@ onMounted(async () => {
   // console.log(JSON.stringify(result.bookings))
   console.log(res.value.date)
   console.log(res.value.data)
-})
+
+  let roomA_ratio_empty = 0;
+  let roomA_ratio_reserved = 0;
+  let roomB_ratio_empty = 0;
+  let roomB_ratio_reserved = 0;
+  let roomC_ratio_empty = 0;
+  let roomC_ratio_reserved = 0;
+  for (let i = 0; i < res.value.data.length; i++) {
+    if (res.value.data[i].roomA == "Empty") {
+      roomA_ratio_empty += 1;
+    } else if (res.value.data[i].roomA == "Reserved") {
+      roomA_ratio_reserved += 1;
+    }
+
+    if (res.value.data[i].roomB == "Empty") {
+      roomB_ratio_empty += 1;
+    } else if (res.value.data[i].roomB == "Reserved") {
+      roomB_ratio_reserved += 1;
+    }
+
+    if (res.value.data[i].roomC == "Empty") {
+      roomC_ratio_empty += 1;
+    } else if (res.value.data[i].roomC == "Reserved") {
+      roomC_ratio_reserved += 1;
+    }
+  }
+  const roomA_ratio = roomA_ratio_reserved / roomA_ratio_empty;
+  const roomB_ratio = roomB_ratio_reserved / roomB_ratio_empty;;
+  const roomC_ratio = roomC_ratio_reserved / roomC_ratio_empty;;
+
+  root = am5.Root.new(chartdiv.value);
+  root.setThemes([am5themes_Animated.new(root)]);
+
+  let chart = root.container.children.push(
+    am5xy.XYChart.new(root, {
+      panY: false,
+      layout: root.verticalLayout,
+    })
+  );
+
+  // Define data
+  let data = [
+    {
+      category: 'RoomA',
+      value1: roomA_ratio,
+    },
+    {
+      category: 'RoomB',
+      value1: roomB_ratio,
+    },
+    {
+      category: 'RoomC',
+      value1: roomC_ratio,
+    },
+  ];
+
+  // Create Y-axis
+  let yAxis = chart.yAxes.push(
+    am5xy.ValueAxis.new(root, {
+      renderer: am5xy.AxisRendererY.new(root, {}),
+    })
+  );
+
+  // Create X-Axis
+  let xAxis = chart.xAxes.push(
+    am5xy.CategoryAxis.new(root, {
+      renderer: am5xy.AxisRendererX.new(root, {}),
+      categoryField: 'category',
+    })
+  );
+  xAxis.data.setAll(data);
+
+  // Create series
+  let series1 = chart.series.push(
+    am5xy.ColumnSeries.new(root, {
+      name: 'Series',
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: 'value1',
+      categoryXField: 'category',
+    })
+  );
+  series1.data.setAll(data);
+
+  // Add legend
+  let legend = chart.children.push(am5.Legend.new(root, {}));
+  legend.data.setAll(chart.series.values);
+
+  // Add cursor
+  chart.set('cursor', am5xy.XYCursor.new(root, {}));
+});
 
 </script>
 
@@ -180,5 +278,10 @@ ion-col {
 .reserved-col {
   background-color: #671111;
   color: #989292;
+}
+
+.hello {
+  width: 100%;
+  height: 300px;
 }
 </style>
