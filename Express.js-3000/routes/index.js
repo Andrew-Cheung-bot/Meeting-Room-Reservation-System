@@ -27,10 +27,20 @@ router.post('/booking', async function (req, res, next) {
 
     const { room_id, start_time, end_time, date } = req.body;
 
+    if(room_id == null || start_time == null || end_time == null || date == null || room_id == "" || start_time == "" || end_time == "" || date == ""){
+      res.status(400).json({ status: 400, message: 'Input cannot be empty' });
+      return;
+    }
+
     const userStartTime = parseInt(start_time);
     const userEndTime = parseInt(end_time);
     if(userStartTime < 8 || userStartTime > 23 || userEndTime < 9 || userEndTime > 24){
       res.status(400).json({ status: 400, message: 'Incorrect range of input time' });
+      return;
+    }
+
+    if(userStartTime >= userEndTime ){
+      res.status(400).json({ status: 400, message: 'Start time later than end time' });
       return;
     }
 
@@ -41,7 +51,7 @@ router.post('/booking', async function (req, res, next) {
     const overlappingBooking = existingBookings.find(booking => {
       const bookingStartTime = parseInt(booking.start_time);
       const bookingEndTime = parseInt(booking.end_time);
-      return (userStartTime < bookingEndTime && userEndTime > bookingStartTime);
+      return (userStartTime < bookingEndTime || userEndTime > bookingStartTime);
     });
 
     if (overlappingBooking) {
@@ -74,7 +84,7 @@ router.post('/booking', async function (req, res, next) {
 
 
 /* Find room bookings based on date */
-router.get('/view-bookings', async function (req, res, next) {
+router.post('/view-bookings', async function (req, res, next) {
   const db = await connectToDB();
   try {
     // Get the date
