@@ -59,7 +59,6 @@
         </ion-row>
 
       </ion-grid>
-
     </ion-content>
   </ion-page>
 </template>
@@ -68,33 +67,30 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonDatetime, IonModal, IonDatetimeButton, alertController } from '@ionic/vue';
 import { closeCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
+const year = new Date().getFullYear();
+const month = new Date().getMonth() + 1;
+const m_month = month < 10 ? '0' + month : month;
+const date = new Date().getDate();
+
+const now_date = ref(year + '-' + m_month + '-' + date);
 
 const res = ref({
-  date: '2024-04-12',
-  data:
-    [{ time: '8:00', roomA: 'Reserved', roomB: 'Empty', roomC: 'Reserved' },
-    { time: '9:00', roomA: 'Empty', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '10:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '11:00', roomA: 'Empty', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '12:00', roomA: 'Empty', roomB: 'Empty', roomC: 'Reserved' },
-    { time: '13:00', roomA: 'Reserved', roomB: 'Empty', roomC: 'Reserved' },
-    { time: '14:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '15:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Empty' },
-    { time: '16:00', roomA: 'Reserved', roomB: 'Empty', roomC: 'Reserved' },
-    { time: '17:00', roomA: 'Empty', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '18:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '19:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '20:00', roomA: 'Reserved', roomB: 'Empty', roomC: 'Reserved' },
-    { time: '21:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' },
-    { time: '22:00', roomA: 'Empty', roomB: 'Empty', roomC: 'Reserved' },
-    { time: '23:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' }]
+  date: now_date.value,
+  data:[]
 });
 
 async function booking(start_time, room_number) {
+  const temp = res.value.date;
+  const year = new Date(temp).getFullYear();
+  const month = new Date(temp).getMonth() + 1;
+  const m_month = month < 10 ? '0' + month : month;
+  const date = new Date(temp).getDate();
+  const now_date = ref(year + '-' + m_month + '-' + date);
+  
   const token = localStorage.getItem('token');
   if (token == null) {
     const alert = await alertController.create({
@@ -106,14 +102,55 @@ async function booking(start_time, room_number) {
     router.push('/library/home');
   } else {
     const timeParts = start_time.split(':');
-    router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0], date: res.value.date, fromstatus: '1' } });
+    router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0], date: now_date.value, fromstatus: '1' } });
   }
 }
 
-function changeDate(event) {
-  alert(res.value.date);
-  //axios to update res_data
+async function changeDate(event) {
+  const body1 = { "date": res.value.date }
+  // console.log(body1);
+  const url = '/room/view-bookings';
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body1)
+  });
+  const result = await response.json();
+  // console.log(res.value.date)
+  // console.log(res.value.data)
+  // console.log('-------------------')
+  res.value.date = JSON.stringify(result.bookings.date);
+  res.value.data = result.bookings.data
+  // console.log(JSON.stringify(result.bookings))
+  // console.log(res.value.date)
+  // console.log(res.value.data)
 }
+
+onMounted(async () => {
+  console.log('on mounted');
+  const body1 = { "date": res.value.date }
+  // console.log(now_date.value);
+  // console.log(body1);
+  const url = '/room/view-bookings';
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body1)
+  });
+  const result = await response.json();
+  console.log(res.value.date)
+  console.log(res.value.data)
+  console.log('-------------------')
+  res.value.date = JSON.stringify(result.bookings.date);
+  res.value.data = result.bookings.data
+  // console.log(JSON.stringify(result.bookings))
+  console.log(res.value.date)
+  console.log(res.value.data)
+})
 
 </script>
 

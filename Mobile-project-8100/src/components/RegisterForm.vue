@@ -92,7 +92,7 @@ async function Register(event) {
         body: JSON.stringify(form.value)
     });
     const res = await response.json();
-
+    console.log(res)
     const alert = await alertController.create({
         header: 'Message',
         message: res.message,

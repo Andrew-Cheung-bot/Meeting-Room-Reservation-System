@@ -39,18 +39,17 @@
         </ion-modal>
 
         <ion-item>
-            <ion-input type="number" placeholder="8 (opening hours)" :clear-input="true" v-model="form.start_time">
+            <ion-input type="number" placeholder="8 (opening hour)" :clear-input="true" v-model="form.start_time">
                 <div slot="label">Start Time <ion-text color="danger">*</ion-text></div>
             </ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-range label-placement="start" :ticks="true" :snaps="true" :min="1" :max="5" v-model="end_num"
-                :pin="true">
-                <div slot="label">Duration <ion-text color="danger">*</ion-text> (hours)</div>
-
-            </ion-range>
+            <ion-input type="number" placeholder="24 (Ending hour)" :clear-input="true" v-model="form.end_time">
+                <div slot="label">End Time <ion-text color="danger">*</ion-text></div>
+            </ion-input>
         </ion-item>
+
 
         <ion-button shape="round" expand="block" @click="submitForm">Submit<ion-icon slot="end"
                 :icon="checkmarkDoneOutline"></ion-icon></ion-button>
@@ -60,9 +59,10 @@
 </template>
 
 <script setup>
-import { IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonDatetime, IonModal, IonDatetimeButton, IonInput, IonRange
+import {
+    IonItem, IonButton, IonList, IonSelect, IonSelectOption, IonLabel, IonText, IonDatetime, IonModal, IonDatetimeButton, IonInput, IonRange, alertController
 } from '@ionic/vue';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { checkmarkDoneOutline, returnDownBackOutline } from 'ionicons/icons';
 import { useRoute, useRouter } from 'vue-router'
 
@@ -70,25 +70,38 @@ const router = useRouter()
 const route = useRoute()
 const emit = defineEmits(['callBack']);
 
-const end_num = ref()
-// change end_num to String
-const convertIntToString = computed(() => {
-    if (end_num.value != undefined) {
-        return end_num.value.toString()
-    }
-})
-
 const form = ref({
     room_id: route.query.room_id,
     u_email: '',
     u_name: '',
     date: route.query.date,
     start_time: route.query.start_time,
-    end_time: convertIntToString
+    end_time: ''
 });
 
-function submitForm(event) {
-    alert(JSON.stringify(form.value));
+async function submitForm(event) {
+    console.log(JSON.stringify(form.value))
+    const url = '/room/booking';
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('token')
+        },
+        body: JSON.stringify(form.value)
+    });
+    const res = await response.json();
+
+    const alert = await alertController.create({
+        header: 'Message',
+        message: res.message,
+        buttons: ['Confirm'],
+    });
+    await alert.present();
+    if (res.status == 201) {
+        router.push('/library/main');
+    }
+
 }
 
 function goBack(event) {
@@ -99,6 +112,17 @@ function goBack(event) {
 watch(() => route.query, (newValue, oldValue) => {
     form.value.room_id = newValue.room_id
     form.value.date = newValue.date
+    if (form.value.date == undefined) {
+        const year = new Date().getFullYear();
+        const month = new Date().getMonth() + 1;
+        const m_month = month < 10 ? '0' + month : month;
+        const date = new Date().getDate();
+        const now_date = ref(year + '-' + m_month + '-' + date);
+        form.value.date = now_date;
+    }
+    // console.log(route.query.date);
+    // console.log(form.value.date);
+    // console.log(newValue.date);
     form.value.start_time = newValue.start_time
 }, { immediate: true })
 
