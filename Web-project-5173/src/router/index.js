@@ -42,12 +42,20 @@ const routes = [
         
       },
       {
-        path:"/signup",
-        name:"signup",
+        path:"/register",
+        name:"register",
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/SignupPage.vue"),
+          import(/* webpackChunkName: "home" */ "@/views/RegisterPage.vue"),
         
       },
+      {
+        path:"/update",
+        name:"update",
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/RegisterPage.vue"),
+        
+      },
+
     ],
   },   
 ];

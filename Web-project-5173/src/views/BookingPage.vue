@@ -27,12 +27,9 @@
 
         <v-card-item>
             <v-date-picker elevation="24" color="indigo-lighten-1" width="100%" class="date-color"
-                v-model="date"></v-date-picker>
+                v-model="raw_date"></v-date-picker>
         </v-card-item>
         
-        <<div class="d-flex justify-center mt-2">Date: {{ date || 'No date' }}</div>
-
-
             <v-card-item>
                 <v-container fluid>
                     <v-row dense>
@@ -62,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref ,computed} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -73,24 +70,44 @@ const rules = ref({
 });
 const rooms = ref([{ room_name: 'Room A', value: 'A' }, { room_name: 'Room B', value: 'B' }, { room_name: 'Room C', value: 'C' }]);
 
+const raw_date = ref();
+const formattedDate = computed(() => {
+    if (!raw_date.value) return '';
+      return raw_date.value.toLocaleDateString('en-CA');
+})
+
 
 const form = ref({
     room_id: route.query.room_id,
     u_email: '',
     u_name: '',
-    date: route.query.date,
+    date: formattedDate,
     start_time: route.query.start_time,
     end_time: ''
 });
 const date = ref(new Date(form.value.date));
 
 
-function submitForm() {
-    alert(JSON.stringify(form.value));
+async function submitForm() {
+    // alert(JSON.stringify(form.value));
+    const url = '/room/booking';
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('token')
+        },
+        body: JSON.stringify(form.value)
+    });
+    const res = await response.json();
+    console.log(res)
+    router.push("/home")
 }
+
 function goBack() {
     router.back();
 }
+
 
 </script>
 

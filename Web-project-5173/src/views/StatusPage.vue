@@ -56,6 +56,8 @@
         </v-row>
 
     </v-container>
+
+
 </template>
 
 <script setup>
@@ -94,6 +96,8 @@ function booking(start_time, room_number) {
     router.push({ path: '/booking', query: { room_id: room_number, start_time: timeParts[0], date: date.value } });
     // 否则跳到注册页面
 }
+
+//visualization
 
 </script>
 
