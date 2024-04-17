@@ -148,7 +148,7 @@ router.post('/view-bookings', async function (req, res, next) {
 });
 
 /* Delete booking */
-router.delete('/delete-booking', async function (req, res, next) {
+router.post('/delete-booking', async function (req, res, next) {
   const db = await connectToDB();
   try {
     // Check if the booking exists
