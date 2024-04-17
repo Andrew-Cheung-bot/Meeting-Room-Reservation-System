@@ -116,7 +116,7 @@ router.get('/show-user', async function (req, res, next) {
   }
 });
 
-/* Update user information *///待测
+/* Update user information */
 router.post('/update-user', async function (req, res, next) {
   const db = await connectToDB();
   try {
@@ -157,7 +157,7 @@ router.post('/update-user', async function (req, res, next) {
   }
 });
 
-/* Delete user based on user ID *///待测
+/* Delete user based on user ID */
 router.delete('/delete-user', async function (req, res, next) {
   const db = await connectToDB();
   try {
@@ -179,7 +179,7 @@ router.delete('/delete-user', async function (req, res, next) {
     // Delete the user
     await db.collection("user_info").deleteOne({ _id: new ObjectId(_id) });
 
-    res.status(200).json({ status: 200, message: 'User deleted successfully' });
+    res.status(200).json({ status: 200, message: 'User deleted successfully', deleteuser: user });
     
   } catch (err) {
     res.status(400).json({ status: 400, message: err.message });
