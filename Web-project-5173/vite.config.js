@@ -46,5 +46,17 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    proxy: {
+      "/users": {
+        target: "http://localhost:3000/users",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/users/, ""),
+      },
+      "/room": {
+        target: "http://localhost:3000/",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/room/, ""),
+      },
+    },
   },
 })

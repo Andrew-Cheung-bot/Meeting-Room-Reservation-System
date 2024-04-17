@@ -34,8 +34,30 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "home" */ "@/views/HomePage.vue"),
       },
+      {
+        path:"/login",
+        name:"login",
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/LoginPage.vue"),
+        
+      },
+      {
+        path:"/register",
+        name:"register",
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/RegisterPage.vue"),
+        
+      },
+      {
+        path:"/update",
+        name:"update",
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/views/RegisterPage.vue"),
+        
+      },
+
     ],
-  },
+  },   
 ];
 
 const router = createRouter({

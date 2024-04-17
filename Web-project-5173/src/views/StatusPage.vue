@@ -56,20 +56,17 @@
         </v-row>
 
     </v-container>
+
+
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
-
-
 const datepicker = ref(false);
-const date = computed(() => {
-    return new Date(res.value.date);
-})
 
 const res = ref({
     date: '2024-04-12',
@@ -91,14 +88,16 @@ const res = ref({
         { time: '22:00', roomA: 'Empty', roomB: 'Empty', roomC: 'Reserved' },
         { time: '23:00', roomA: 'Reserved', roomB: 'Reserved', roomC: 'Reserved' }]
 });
+const date = ref(new Date(res.value.date));
 
 function booking(start_time, room_number) {
     const timeParts = start_time.split(':');
-    alert(timeParts[0] + room_number)
     // 如果登录了就可以直接跳
-    // router.push({ path: '/library/booking', query: { room_id: room_number, start_time: timeParts[0], date: res.value.date, fromstatus: '1' } });
+    router.push({ path: '/booking', query: { room_id: room_number, start_time: timeParts[0], date: date.value } });
     // 否则跳到注册页面
 }
+
+//visualization
 
 </script>
 
